@@ -1,4 +1,3 @@
-it most core.lua and gui.lua  Serparated script Modules.
 -- main.lua
 print("🟢 Loading Hat Orbit Modules...")
 
@@ -10,5 +9,3 @@ print("✅ GUI loaded")
 
 Core.Init(GUI)
 print("🔥 Hat Orbit v9.9.8 Fully Loaded!")
-
-Not entire the core.lua
