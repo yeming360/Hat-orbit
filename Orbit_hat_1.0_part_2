@@ -1,4 +1,4 @@
--- main.lua
+-- Orbit_hat_1.0_part_2
 print("🟢 Loading Hat Orbit Modules...")
 
 local Core = loadstring(game:HttpGet("https://raw.githubusercontent.com/yeming360/hat-orbit/main/Core.lua"))()
