@@ -1,4 +1,4 @@
--- gui.lua
+--[[ Hat Orbit v9.9.9 — GUI Module ]]
 local GUI = {}
 
 function GUI.Create(Core)
@@ -35,7 +35,7 @@ function GUI.Create(Core)
     title.Size = UDim2.new(1, -50, 1, 0)
     title.Position = UDim2.new(0, 14, 0, 0)
     title.BackgroundTransparency = 1
-    title.Text = "🔥 Hat Orbit v9.9.8"
+    title.Text = "🔥 Hat Orbit v9.9.9"
     title.TextColor3 = Color3.new(1, 1, 1)
     title.Font = Enum.Font.GothamBold
     title.TextSize = 13
@@ -245,7 +245,7 @@ function GUI.Create(Core)
     end)
     
     -- ═══════════════════════════════════════════════════════
-    -- GUI SECTIONS - ALL FEATURES
+    -- GUI SECTIONS
     -- ═══════════════════════════════════════════════════════
     
     addModeRow("🔀 Orbit Axis", {{key="Y",text="Y Halo"},{key="X",text="X Tumble"},{key="Z",text="Z Fan"}}, function() return Core.ORBIT_MODE end, function(k) Core.ORBIT_MODE=k end)
@@ -308,15 +308,12 @@ function GUI.Create(Core)
     addSlider("🌀 Orbit Speed", -10000,10000, Core.SHOOT_OUT_ORBIT_SPEED, 10, function(v) Core.SHOOT_OUT_ORBIT_SPEED=v end)
     addTog("🌍 Orbit While Shoot", function() return Core.USE_SHOOT_OUT_ORBIT end, function() Core.USE_SHOOT_OUT_ORBIT=not Core.USE_SHOOT_OUT_ORBIT end, {text="🌍 ON",bg=Color3.fromRGB(0,150,100)}, {text="⚫ OFF",bg=Color3.fromRGB(55,55,65)})
     
-    -- OUTER RING 2 (Exact Layout)
+    -- OUTER RING 2
     addSec("── Outer Ring 2 ──")
     addTog("🔘 Outer Ring 2", function() return Core.USE_OUTER2 end, function() Core.USE_OUTER2=not Core.USE_OUTER2 end, {text="🔵 ON",bg=Color3.fromRGB(60,150,220)}, {text="⚫ OFF",bg=Color3.fromRGB(55,55,65)})
-    addSlider("👤 Ring 2 Count", 1,16, Core.OUTER2_COUNT, 1, function(v) Core.OUTER2_COUNT=math.floor(v) end)
-    
-    addModeRow("🔀 Orbit Axis", {{key="Y",text="Y Holo"},{key="X",text="X Tumble"},{key="Z",text="Z Fan"}}, function() return Core.OUTER2_MODE end, function(k) Core.OUTER2_MODE=k end)
-    
+    addSlider("👤 Count", 1,16, Core.OUTER2_COUNT, 1, function(v) Core.OUTER2_COUNT=math.floor(v) end)
+    addModeRow("🔀 Orbit Axis", {{key="Y",text="Y Halo"},{key="X",text="X Tumble"},{key="Z",text="Z Fan"}}, function() return Core.OUTER2_MODE end, function(k) Core.OUTER2_MODE=k end)
     addModeRow("💫 Spin Axis", {{key="Y",text="Y"},{key="X",text="X"},{key="Z",text="Z"}}, function() return Core.OUTER2_SPIN_MODE end, function(k) Core.OUTER2_SPIN_MODE=k end)
-    
     addSlider("📏 Distance", -10000,10000, Core.OUTER2_DISTANCE, 0.5, function(v) Core.OUTER2_DISTANCE=v end)
     addSlider("⭕ Radius", -10000,10000, Core.OUTER2_RADIUS, 0.5, function(v) Core.OUTER2_RADIUS=v end)
     addSlider("🌀 Speed", -10000,10000, Core.OUTER2_SPEED, 5, function(v) Core.OUTER2_SPEED=v end)
@@ -325,23 +322,43 @@ function GUI.Create(Core)
     addTog("🔀 Split", function() return Core.USE_OUTER2_SPLIT end, function() Core.USE_OUTER2_SPLIT=not Core.USE_OUTER2_SPLIT end, {text="🔀 ON",bg=Color3.fromRGB(255,170,0)}, {text="⚫ OFF",bg=Color3.fromRGB(55,55,65)})
     addSlider("📊 Split Ratio", 0.1,0.9, Core.OUTER2_SPLIT_RATIO, 0.05, function(v) Core.OUTER2_SPLIT_RATIO=v end)
     
-    -- WING MODE (Exact Layout)
+    -- WING MODE
     addSec("── 🕊️ Wing Mode ──")
     addTog("🔘 Wing Mode", function() return Core.USE_WING end, function() Core.USE_WING=not Core.USE_WING end, {text="🕊️ ON",bg=Color3.fromRGB(100,200,255)}, {text="⚫ OFF",bg=Color3.fromRGB(55,55,65)})
     
-    -- Spin Axis - Magnet Looks
-    local magnetLabel = ({X="X-Axis", Y="Y-Axis", Z="Z-Axis"})[Core.OUTER2_SPIN_MODE] or "Y-Axis"
-    addSec("  Spin Axis - Magnet Looks: " .. magnetLabel)
+    -- Reactive magnet label
+    local magnetLabel = Instance.new("TextLabel", content)
+    magnetLabel.Size = UDim2.new(1, -PAD*2, 0, 16)
+    magnetLabel.Position = UDim2.new(0, PAD, 0, y)
+    magnetLabel.BackgroundTransparency = 1
+    magnetLabel.TextColor3 = Color3.fromRGB(130,130,150)
+    magnetLabel.Font = Enum.Font.GothamBold
+    magnetLabel.TextSize = 10
+    magnetLabel.TextXAlignment = Enum.TextXAlignment.Center
+    y = y + 20
     
-    -- Spin slider
+    local function updateMagnetLabel()
+        magnetLabel.Text = "  Spin Axis - Magnet Looks: " .. ({X="X-Axis", Y="Y-Axis", Z="Z-Axis"})[Core.OUTER2_SPIN_MODE] or "Y-Axis"
+    end
+    updateMagnetLabel()
+    
+    -- Hook to update label when spin mode changes
+    local originalSpinMode = Core.OUTER2_SPIN_MODE
+    task.spawn(function()
+        while screenGui and screenGui.Parent do
+            if Core.OUTER2_SPIN_MODE ~= originalSpinMode then
+                originalSpinMode = Core.OUTER2_SPIN_MODE
+                updateMagnetLabel()
+            end
+            task.wait(0.1)
+        end
+    end)
+    
     addSlider("Spin", -180,180, Core.OUTER2_SPIN, 1, function(v) Core.OUTER2_SPIN=v end)
     
     -- ONE Y-AXIS MAGNET
     addSec("── Magnet ──")
     addTog("🧲 Y-Axis Magnet (Look At Me)", function() return Core.WING_Y_MAGNET_ENABLED end, function() Core.WING_Y_MAGNET_ENABLED=not Core.WING_Y_MAGNET_ENABLED end, {text="🧲 ON",bg=Color3.fromRGB(60,180,80)}, {text="⚫ OFF",bg=Color3.fromRGB(55,55,65)})
-    
-    -- Spin slider
-    addSlider("Spin", -180,180, Core.OUTER2_SPIN, 1, function(v) Core.OUTER2_SPIN=v end)
     
     -- Min/Max for all axes
     addSec("  Y-Axis Limits")
@@ -357,7 +374,6 @@ function GUI.Create(Core)
     addSlider("Max Z-Axis", -180,180, Core.WING_MAX_Z, 1, function(v) Core.WING_MAX_Z=math.floor(v) end)
     
     addSlider("Wing Speed", 1,180, Core.WING_SPEED_X, 1, function(v) Core.WING_SPEED_X=v end)
-
     
     -- OUTER RING 3
     addSec("── Outer Ring 3 ──")
@@ -382,7 +398,7 @@ function GUI.Create(Core)
     addSlider("📏 Distance", -10000,10000, Core.OUTER4_DISTANCE, 0.5, function(v) Core.OUTER4_DISTANCE=v end)
     addSlider("⭕ Radius", -10000,10000, Core.OUTER4_RADIUS, 0.5, function(v) Core.OUTER4_RADIUS=v end)
     addSlider("🌀 Speed", -10000,10000, Core.OUTER4_SPEED, 5, function(v) Core.OUTER4_SPEED=v end)
-    addSlider("↕️ Height", -10000,10000, Core.OUTER4_HEIGHT, 0.5, function(v) Core.OUTER4_HEIGHT=v end)
+    addSlider("↕︁ Height", -10000,10000, Core.OUTER4_HEIGHT, 0.5, function(v) Core.OUTER4_HEIGHT=v end)
     addSlider("💫 Spin", -10000,10000, Core.OUTER4_SPIN, 0.5, function(v) Core.OUTER4_SPIN=v end)
     addTog("🔀 Split", function() return Core.USE_OUTER4_SPLIT end, function() Core.USE_OUTER4_SPLIT=not Core.USE_OUTER4_SPLIT end, {text="🔀 ON",bg=Color3.fromRGB(255,170,0)}, {text="⚫ OFF",bg=Color3.fromRGB(55,55,65)})
     addSlider("📊 Split Ratio", 0.1,0.9, Core.OUTER4_SPLIT_RATIO, 0.05, function(v) Core.OUTER4_SPLIT_RATIO=v end)
@@ -545,3 +561,13 @@ function GUI.Create(Core)
 end
 
 return GUI
+## 🚀 **Deploy**
+
+1. Replace `core.lua` and `gui.lua` in your GitHub repo
+2. Commit → pushes to `main` branch
+3. Run in Delta:
+```lua
+loadstring(game:HttpGet("https://raw.githubusercontent.com/yeming360/Hat-orbit/main/main.lua"))()
+```
+
+All features should work: Wing Mode (spin + oscillation), Y-Axis Magnet, all rings, hold modes, GUI reactive updates. 🎮🕊️✨
