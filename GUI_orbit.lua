@@ -1,5 +1,5 @@
 --[[ Hat Orbit v9.9.9 — GUI Module ]]
-local GUI = {}
+local GUI_orbit = {}
 
 function GUI.Create(Core)
     local Players = game:GetService("Players")
