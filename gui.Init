@@ -561,13 +561,3 @@ function GUI.Create(Core)
 end
 
 return GUI
-## 🚀 **Deploy**
-
-1. Replace `core.lua` and `gui.lua` in your GitHub repo
-2. Commit → pushes to `main` branch
-3. Run in Delta:
-```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/yeming360/Hat-orbit/main/main.lua"))()
-```
-
-All features should work: Wing Mode (spin + oscillation), Y-Axis Magnet, all rings, hold modes, GUI reactive updates. 🎮🕊️✨
